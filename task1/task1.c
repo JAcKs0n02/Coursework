@@ -9,6 +9,15 @@ typedef struct {
 	int steps;
 } FITNESS_DATA;
 
+
+int main() {
+    // Open the CSV file for reading
+    FILE *file = fopen("FitnessData_2023.csv", "r");
+    if (file == NULL) {
+        fprintf(stderr, "Error: Unable to open the file.\n");
+        return 1;
+    }
+}
 // Define any additional variables here
 
 
@@ -23,7 +32,8 @@ void tokeniseRecord(const char *input, const char *delimiter,
     
     // Tokenize the copied string
     char *token = strtok(inputCopy, delimiter);
-    if (token != NULL) {        strcpy(date, token);
+    if (token != NULL) {
+        strcpy(date, token);
     }
     
     token = strtok(NULL, delimiter);
