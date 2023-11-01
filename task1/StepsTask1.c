@@ -15,9 +15,10 @@ int main() {
     if (file == NULL) {
         fprintf(stderr, "Error: Unable to open the file.\n");
         return 1;
+    }
 
 // Define any additional variables here
-
+    int maxRecords = 1000, recordCount = 0, i;
 
 
 // This is your helper function. Do not change it in any way.
@@ -49,7 +50,22 @@ void tokeniseRecord(const char *input, const char *delimiter,
 }
 
 // Complete the main function
-int main() {
+    FITNESS_DATA records[maxRecords];
+     
 
+    char line[100];
+    while (fgets(line, sizeof(line), file) && recordCount < maxRecords) {
+        sscanf(line, "%10[^,],%5[^,],%d", records[recordCount].date, records[recordCount].time, &records[recordCount].steps);
+        recordCount++;
+    }
+
+    fclose(file);
+
+    printf("Number of records in file: %d\n", recordCount);
+
+    for (i = 0; i < 3; i++){
+        printf("%s/%s/%d\n", records[i].date, records[i].time, records[i].steps);
+    }
+    return 0;
 
 }
