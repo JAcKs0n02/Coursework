@@ -9,16 +9,10 @@ typedef struct {
 	int steps;
 } FITNESS_DATA;
 
-int main() {
-    // Open the CSV file for reading
-    FILE *file = fopen("FitnessData_2023.csv", "r");
-    if (file == NULL) {
-        fprintf(stderr, "Error: Unable to open the file.\n");
-        return 1;
-    }
-
 // Define any additional variables here
-    int MaxAmount = 1000, recordednum = 0, i;
+int MaxAmount = 1000, recordednum = 0, i;
+char line[100];
+char date[11] , time[6], steps[5];
 
 
 // This is your helper function. Do not change it in any way.
@@ -50,15 +44,24 @@ void tokeniseRecord(const char *input, const char *delimiter,
 }
 
 // Complete the main function
-    FITNESS_DATA records[MaxAmount];
-     
 
-    char line[100];
-    while (fgets(line, sizeof(line), file) && recordednum < MaxAmount) {
-        sscanf(line, "%10[^,],%5[^,],%d", records[recordednum].date, records[recordednum].time, &records[recordednum].steps);
-        recordednum ++;
+int main() {
+    FILE *file = fopen("FitnessData_2023.csv", "r");
+    if (file == NULL) {
+        fprintf(stderr, "Error: Unable to open the file.\n");
+        return 1;
     }
 
+    FITNESS_DATA records[MaxAmount];
+     
+    while(fgets(line,30,file)){
+    tokeniseRecord(line, ",", date, time, steps);
+    strcpy(records[recordednum].date, date);
+    strcpy(records[recordednum].time, time);
+    records[recordednum].steps=atoi(steps);
+    recordednum++;
+    }
+   
     fclose(file);
 
     printf("Number of records in file: %d\n", recordednum);
