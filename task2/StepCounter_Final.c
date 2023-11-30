@@ -86,20 +86,6 @@ void B_TotalNum() {
     printf("Total records: %d\n", recordednum);
 }
 
-void D_LargestSteps() {
-    ImportedFile();
-    int Max = records[0].steps;
-    int Num = 0;
-
-    for (i = 0; i < recordednum; i++){
-        if (records[i].steps > Max){
-            Max = records[i].steps;
-            Num = i;
-        }
-    }
-    printf("Largest steps: %s %s\n", records[Num].date, records[Num].time);
-
-}
 
 void C_FewestSteps() {
     ImportedFile();
@@ -116,6 +102,20 @@ void C_FewestSteps() {
     printf("Fewest steps: %s %s\n", records[Num].date, records[Num].time);
 }
 
+void D_LargestSteps() {
+    ImportedFile();
+    int Max = records[0].steps;
+    int Num = 0;
+
+    for (i = 0; i < recordednum; i++){
+        if (records[i].steps > Max){
+            Max = records[i].steps;
+            Num = i;
+        }
+    }
+    printf("Largest steps: %s %s\n", records[Num].date, records[Num].time);
+
+}
 
 
 void E_MeanSteps (){
@@ -171,6 +171,7 @@ int main() {
     printf("Q: QUit\n");
     printf("\n");
 
+
     printf("Enter your choice: ");
     scanf("%c", &choice);
 
@@ -212,9 +213,8 @@ int main() {
 
         default:
             printf("Invalid choice. Try again.\n");
-
-
         
+    
     }
 }
 
