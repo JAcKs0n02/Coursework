@@ -42,20 +42,35 @@ void tokeniseRecord(const char *input, const char *delimiter,
 
 
 // Complete the main function
+
 FITNESS_DATA records[100];
 int recordednum = 0, i;
 
-void ImportedFile() {
-    FILE *file = fopen("FitnessData_2023.csv", "r");
+int ImportedFile() {
+    char inputname[] = "FitnessData_2023.csv";
+    
+    /*FILE *file = fopen("FitnessData_2023.csv", "r");
     if (file == NULL) {
         fprintf(stderr, "Error: Unable to open the file.\n");
-        return;
+        return 1;
+    }
+    */
+
+    printf("Input filename: ");
+    scanf("%s", inputname);
+    FILE *file = fopen(inputname, "r");
+    if(!file){
+        printf("Error: Could not find or open the file.\n");
+        return 1;
+    }
+    else{
+        printf("File successfully loaded.\n");
     }
     
     char line[100];
-    char date[11] , time[6], steps[5];
+    char date[11] , time[6], steps[20];
 
-    while(fgets(line,30,file)){
+    while(fgets(line,100,file)){
     tokeniseRecord(line, ",", date, time, steps);
     strcpy(records[recordednum].date, date);
     strcpy(records[recordednum].time, time);
@@ -66,9 +81,7 @@ void ImportedFile() {
     fclose(file);
 }
 
-void A_CheckFilename() {
-    ImportedFile();
-
+/*void A_CheckFilename() {
     char inputname[] = "FitnessData_2023.csv";
     char CheckName[100];
     printf("Enter the Filename: ");
@@ -80,15 +93,13 @@ void A_CheckFilename() {
             printf("File successfully loaded.\n");
         }
 }
+*/
 
 void B_TotalNum() {
-    ImportedFile();
     printf("Total records: %d\n", recordednum);
 }
 
-
 void C_FewestSteps() {
-    ImportedFile();
     int min;
     int Num;
 
@@ -103,23 +114,19 @@ void C_FewestSteps() {
 }
 
 void D_LargestSteps() {
-    ImportedFile();
-    int Max = records[0].steps;
+    int max;
     int Num = 0;
-
-    for (i = 0; i < recordednum; i++){
-        if (records[i].steps > Max){
-            Max = records[i].steps;
+    max = records[0].steps;
+    for(i = 0; i < recordednum; i++){
+        if(records[i].steps > max){
+            max = records[i].steps;
             Num = i;
         }
     }
     printf("Largest steps: %s %s\n", records[Num].date, records[Num].time);
-
 }
 
-
 void E_MeanSteps (){
-    ImportedFile();
     int totalSteps = 0;
 
     for (i = 0; i < recordednum; i++) {
@@ -131,7 +138,6 @@ void E_MeanSteps (){
 }
 
 void F_StepsAbove500() {
-    ImportedFile();
     int longestCount = 0;
     int count = 0;
     int startIdx = 0;
@@ -151,71 +157,74 @@ void F_StepsAbove500() {
     if (longestCount > 0) {
         printf("Longest period start: %s %s\n", records[startIdx].date, records[startIdx].time);
         printf("Longest period end: %s %s\n", records[startIdx + longestCount - 1].date, records[startIdx + longestCount - 1].time);
-    } else {
-        printf("No continuous period with steps above 500.\n");
-    }
+    } 
 }
 
 
 int main() {
     char choice;
-    int fileLoaded = 0;
 
-    printf("MENU: \n");
-    printf("A: Specify the filename to be imported\n");
-    printf("B: Display the total number of records in the file\n");
-    printf("C: Find the date and time of the timeslot with the fewest steps\n");
-    printf("D: Find the data and time of the timeslot with the largest number of steps\n");
-    printf("E: Find the mean step count of all the records in the file\n");
-    printf("F: Find the longest continuous period where the step count is above 500 steps\n");
-    printf("Q: QUit\n");
-    printf("\n");
+    while (1){
+        printf("MENU: \n");
+        printf("A: Specify the filename to be imported\n");
+        printf("B: Display the total number of records in the file\n");
+        printf("C: Find the date and time of the timeslot with the fewest steps\n");
+        printf("D: Find the data and time of the timeslot with the largest number of steps\n");
+        printf("E: Find the mean step count of all the records in the file\n");
+        printf("F: Find the longest continuous period where the step count is above 500 steps\n");
+        printf("Q: QUit\n");
+        printf("\n");
 
+        printf("Enter your choice: ");
+        scanf("%c", &choice);
 
-    printf("Enter your choice: ");
-    scanf("%c", &choice);
+        switch(choice){
+            case 'A':
+            case 'a':
+                if(ImportedFile() == 1){
+                    return 1;
+                }
+                break;
 
-    switch(choice){
-        case 'A':
-        case 'a':
-            A_CheckFilename();
-            break;
+            case 'B':
+            case 'b':
+                B_TotalNum();
+                break;
+            
+            case 'C':
+            case 'c':
+                C_FewestSteps();
+                break;
 
-        case 'B':
-        case 'b':
-            B_TotalNum();
-            break;
+            case 'D':
+            case 'd':
+                D_LargestSteps();
+                break;
+
+            case 'E':
+            case 'e':
+                E_MeanSteps();
+                break;
+
+            case 'F':
+            case 'f': 
+                F_StepsAbove500();
+                break;
+
+            case 'Q':
+            case 'q':
+                printf("QUIT\n");
+                break;
+
+            default:
+                printf("Invalid choice. Try again.\n");
+
+        }
         
-        case 'C':
-        case 'c':
-            C_FewestSteps();
-            break;
-
-        case 'D':
-        case 'd':
-            D_LargestSteps();
-            break;
-
-        case 'E':
-        case 'e':
-            E_MeanSteps();
-            break;
-
-        case 'F':
-        case 'f': 
-            F_StepsAbove500();
-            break;
-
-        case 'Q':
-        case 'q':
-            printf("QUIT\n");
-            break;
-
-        default:
-            printf("Invalid choice. Try again.\n");
+        while (getchar() != '\n');
         
-    
     }
+    return 0;
 }
 
 
