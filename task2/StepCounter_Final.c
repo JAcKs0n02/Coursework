@@ -192,8 +192,7 @@ int main() {
 
             case 'Q':
             case 'q':
-                printf("QUIT\n");
-                break;
+            return 0;
 
             default:
                 printf("Invalid choice. Try again.\n");
