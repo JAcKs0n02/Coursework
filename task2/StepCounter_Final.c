@@ -48,14 +48,6 @@ int recordednum = 0, i;
 
 int ImportedFile() {
     char inputname[] = "FitnessData_2023.csv";
-    
-    /*FILE *file = fopen("FitnessData_2023.csv", "r");
-    if (file == NULL) {
-        fprintf(stderr, "Error: Unable to open the file.\n");
-        return 1;
-    }
-    */
-
     printf("Input filename: ");
     scanf("%s", inputname);
     FILE *file = fopen(inputname, "r");
@@ -81,19 +73,6 @@ int ImportedFile() {
     fclose(file);
 }
 
-/*void A_CheckFilename() {
-    char inputname[] = "FitnessData_2023.csv";
-    char CheckName[100];
-    printf("Enter the Filename: ");
-        scanf("%s", CheckName);
-        if (strcmp(CheckName, inputname)){
-            printf("Error: Could not open file\n");
-        }
-        else{
-            printf("File successfully loaded.\n");
-        }
-}
-*/
 
 void B_TotalNum() {
     printf("Total records: %d\n", recordednum);
