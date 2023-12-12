@@ -36,7 +36,7 @@ void tokeniseRecord(const char *input, const char *delimiter,
     // Free the duplicated string
     free(inputCopy);
 
-                    }
+    }
 
 
 
@@ -195,7 +195,7 @@ int main() {
             return 0;
 
             default:
-                printf("Invalid choice. Try again.\n");
+            printf("Invalid choice. Try again.\n");
 
         }
         
