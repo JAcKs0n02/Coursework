@@ -3,16 +3,14 @@
 #include <string.h>
 #include "FitnessDataStruct.h"
 
-int i;//recordcounter
-FITNESS_DATA st[200];//StepsTask data storage
+FITNESS_DATA records[250];
+int recordednum;
 
 void tokeniseRecord(const char *input, const char *delimiter,
                     char *date, char *time, char *steps) {
-
     char *inputCopy = strdup(input);
-    
     char *token = strtok(inputCopy, delimiter);
-    if (token != NULL) {        strcpy(date, token);
+    if (token != NULL) {strcpy(date, token);
     }
     
     token = strtok(NULL, delimiter);
@@ -24,175 +22,167 @@ void tokeniseRecord(const char *input, const char *delimiter,
     if (token != NULL) {
         strcpy(steps, token);
     }
-    
-    free(inputCopy);
-    }
 
-int inputdata() {
-    char inputname[] = "FitnessData_2023.csv";
-    int buffer_size = 250;
-    char line[buffer_size];
-    i = 0;
+    free(inputCopy);
+}
+
+int ImportedFile() {
+    char inputname[100];
+    char line[250];
+    char date[20] , time[20], steps[20];
+    recordednum = 0;
 
     printf("Input filename: ");
     scanf("%s", inputname);
-    FILE *input = fopen(inputname, "r");
-    if(!input){
+    FILE *file = fopen(inputname, "r");
+    if(!file){
         printf("Error: Could not find or open the file.\n");
         return 1;
-    }
-    else{
+    }else{
         printf("File successfully loaded.\n");
     }
-
-    char date[11];
-    char time[6];
-    char stepsStr[20];
-    int steps;
-
-    while (fgets(line, buffer_size, input))
-    {
-    tokeniseRecord(line, ",", date, time, stepsStr);
-
-    steps = atoi(stepsStr);
-
-    strcpy(st[i].date, date);
-    strcpy(st[i].time, time);
-    st[i].steps = steps;
-    i++;
+    
+    while(fgets(line,100,file)){
+    tokeniseRecord(line, ",", date, time, steps);
+    strcpy(records[recordednum].date, date);
+    strcpy(records[recordednum].time, time);
+    records[recordednum].steps=atoi(steps);
+    recordednum++;
     }
-    fclose(input);
+    fclose(file);
 }
 
-void C_Minimumsteps() {
-    int mini; //Minimum steps
-    int n;
-    int nnum;
-    mini = st[0].steps;
-    for(n = 0; n < i; n++){
-        if(st[n].steps < mini){
-            mini = st[n].steps;
-            nnum = n;
+
+void B_TotalNum() {
+    printf("Total records: %d\n", recordednum);
+}
+
+void C_FewestSteps() {
+    int min;
+    int Num;
+    int i;
+
+    min = records[0].steps;
+    for (i = 0; i < recordednum; i++){
+        if (records[i].steps < min){
+            min = records[i].steps;
+            Num = i;
         }
     }
-    printf("Fewest steps: %s %s\n", st[nnum].date, st[nnum].time);
+    printf("Fewest steps: %s %s\n", records[Num].date, records[Num].time);
 }
 
-void D_Maximumsteps() {
-    int maxs; //Maximum steps
-    int n;
-    int nnum;
-    maxs = st[0].steps;
-    for(n = 0; n < i; n++){
-        if(st[n].steps > maxs){
-            maxs = st[n].steps;
-            nnum = n;
+void D_LargestSteps() {
+    int max;
+    int Num = 0;
+    int i;
+    max = records[0].steps;
+    for(i = 0; i < recordednum; i++){
+        if(records[i].steps > max){
+            max = records[i].steps;
+            Num = i;
         }
     }
-    printf("Largest steps: %s %s\n", st[nnum].date, st[nnum].time);
+    printf("Largest steps: %s %s\n", records[Num].date, records[Num].time);
 }
 
-void E_mean() {
-    int mean;
-    int sum = 0;
-    int n;
+void E_MeanSteps (){
+    int totalSteps = 0;
+    int i;
 
-    for(n = 0; n < i; n++){
-        sum += st[n].steps;
+    for (i = 0; i < recordednum; i++) {
+        totalSteps += records[i].steps;
     }
 
-    mean = (sum + i / 2) / i;
-    printf("Mean step count: %d\n", mean);
+    float mean = (float)totalSteps / recordednum;
+    printf("Mean step count: %.0f\n", mean);
 }
 
-void F_continuous_period() {
-    int con1 = 0;//continuous period counter
-    int con2 = 0;
-    int start1;
-    int start2;
-    int finish = 0;
+void F_StepsAbove500() {
+    int longestCount = 0;
+    int count = 0;
+    int startIdx = 0;
+    int i;
 
-    for(int n = 0; n < i; n++){
-        if(st[n].steps > 500){
-            con1++;
-            if(con1 == 1){
-                start1 = n;
+    for (i = 0; i < recordednum; i++) {
+        if (records[i].steps > 500) {
+            count++;
+            if (count > longestCount) {
+                longestCount = count;
+                startIdx = i - count + 1;
             }
-        }else{
-            con1 = 0;
-            }
-        
-        if(con1 > con2){
-            con2 = con1;
-            start2 =start1;
+        } else {
+            count = 0;
         }
     }
 
-    finish = start2 + con2 - 1;
-
-    printf("Longest period start: %s %s\n", st[start2].date, st[start2].time);
-    printf("Longest period end: %s %s\n", st[finish].date, st[finish].time);
+    if (longestCount > 0) {
+        printf("Longest period start: %s %s\n", records[startIdx].date, records[startIdx].time);
+        printf("Longest period end: %s %s\n", records[startIdx + longestCount - 1].date, records[startIdx + longestCount - 1].time);
+    } 
 }
+
 
 int main() {
-    char option;
-    while (1)
-    {
-        printf("Menu Options:\n"
-            "A: Specify the filename to be imported\n"
-            "B: Display the total number of records in the file\n"
-            "C: Find the date and time of the timeslot with the fewest steps\n"
-            "D: Find the date and time of the timeslot with the largest number of steps\n"
-            "E: Find the mean step count of all the records in the file\n"
-            "F: Find the longest continuous period where the step count is above 500 steps\n"
-            "Q: Quit\n");
-        printf("Enter choice: ");
-        scanf("%c", &option);
+    char choice;
 
-        switch (option)
-        {
-            case 'a':
+    while (1){
+        printf("MENU: \n");
+        printf("A: Specify the filename to be imported\n");
+        printf("B: Display the total number of records in the file\n");
+        printf("C: Find the date and time of the timeslot with the fewest steps\n");
+        printf("D: Find the data and time of the timeslot with the largest number of steps\n");
+        printf("E: Find the mean step count of all the records in the file\n");
+        printf("F: Find the longest continuous period where the step count is above 500 steps\n");
+        printf("Q: QUit\n");
+
+        printf("Enter your choice: ");
+        scanf("%c", &choice);
+
+        switch(choice){
             case 'A':
-                if(inputdata() == 1){
+            case 'a':
+                if(ImportedFile() == 1){
                     return 1;
                 }
-            break;
+                break;
 
-            case 'b':
             case 'B':
-                printf("Total records: %d\n", i);
-            break;
-
-            case 'c':
-            case 'C':
-                C_Minimumsteps();
-            break;
-
-            case 'd':
-            case 'D':
-                D_Maximumsteps();
-            break;
-
-            case 'e':
-            case 'E':
-                E_mean();
-            break;
+            case 'b':
+                B_TotalNum();
+                break;
             
-            case 'f':
-            case 'F':
-                F_continuous_period();
-            break;
+            case 'C':
+            case 'c':
+                C_FewestSteps();
+                break;
 
+            case 'D':
+            case 'd':
+                D_LargestSteps();
+                break;
+
+            case 'E':
+            case 'e':
+                E_MeanSteps();
+                break;
+
+            case 'F':
+            case 'f': 
+                F_StepsAbove500();
+                break;
+
+            case 'Q':
             case 'q':
-            case 'Q'://quit
             return 0;
 
             default:
             printf("Invalid choice. Try again.\n");
+
         }
-
+        
         while (getchar() != '\n');
+        
     }
-
     return 0;
 }
