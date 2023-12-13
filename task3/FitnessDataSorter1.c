@@ -24,52 +24,58 @@ void tokeniseRecord(char *record, char delimiter, char *date, char *time, int *s
     }
 }
 
-int compareFitnessData(const void *a, const void *b) {
-    FitnessData *dataA = (FitnessData *)a;
-    FitnessData *dataB = (FitnessData *)b;
-
-    // For descending order, compare B with A
-    return dataB->steps - dataA->steps;
+int compareFitnessData(const void *data1, const void *data2) {
+    FitnessData *p1 = (FitnessData *)data1;
+    FitnessData *p2 = (FitnessData *)data2;
+    return (p2->steps - p1->steps);
 }
 
 int main() {
     char inputFilename[80];
-    char record[250];
-    int numRecords = 0;
-    FitnessData data[200];
 
     printf("Enter Filename: ");
     scanf("%s", inputFilename);
 
+
     FILE *fp = fopen(inputFilename, "r");
     if (!fp) {
         printf("Error opening input file: %s\n", inputFilename);
-        return 1;
+        exit(1);
     }
 
-    while (fgets(record, 200, fp)) {
+    int numRecords = 0;
+    FitnessData *data = malloc(sizeof(FitnessData));
+
+    while (!feof(fp)) {
+        if (numRecords == sizeof(data) / sizeof(FitnessData)) {
+            FitnessData *tempData = malloc(2 * sizeof(FitnessData));
+            memcpy(tempData, data, numRecords * sizeof(FitnessData));
+            free(data);
+            data = tempData;
+        }
+
+        char record[100];
+        fgets(record, 100, fp);
         tokeniseRecord(record, ',', data[numRecords].date, data[numRecords].time, &data[numRecords].steps);
         numRecords++;
     }
+
     fclose(fp);
 
     qsort(data, numRecords, sizeof(FitnessData), compareFitnessData);
 
+
     FILE *fp2 = fopen((strcat(inputFilename, ".tsv")), "w");
     if (!fp2) {
         printf("Error opening output file: %s\n", strcat(inputFilename, ".tsv"));
-        return 1;;
+        exit(1);
     }
 
     for (int i = 0; i < numRecords; i++) {
         fprintf(fp2, "%s\t%s\t%d\n", data[i].date, data[i].time, data[i].steps);
     }
 
-    fclose (fp2);
-    printf("Data sorted and written to %s\n", inputFilename);
+    free(data);
+
     return 0;
 }
-
-
-
-

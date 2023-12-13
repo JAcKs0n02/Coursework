@@ -34,7 +34,7 @@ int compareFitnessData(const void *a, const void *b) {
 
 int main() {
     char inputFilename[80];
-    char record[250];
+    char record[100];
     int numRecords = 0;
     FitnessData data[200];
 
@@ -66,7 +66,7 @@ int main() {
     }
 
     fclose (fp2);
-    printf("Data sorted and written to %s\n", inputFilename);
+
     return 0;
 }
 
