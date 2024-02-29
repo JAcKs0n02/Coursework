@@ -5,11 +5,11 @@
 #define MAX_ROWS 100
 #define MAX_COLS 100
 
-
+//Function phototypes
 int isRectangular(char maze[MAX_ROWS][MAX_COLS], int rows, int cols);
 int validateMaze(char maze[MAX_ROWS][MAX_COLS], int rows, int cols);
-void printMaze(char maze[MAX_ROWS][MAX_COLS], int rows, int cols, int showMap, int playerX, int playerY)
-int movePlayer(char maze[MAX_ROWS][MAX_COLS], int *playerX, int *playerY, char direction)
+void printMaze(char maze[MAX_ROWS][MAX_COLS], int rows, int cols, int showMap, int xGird, int yGird);
+int movePlayer(char maze[MAX_ROWS][MAX_COLS], int *xGird, int *yGird, char direction);
 
 int isRectangular(char maze[MAX_ROWS][MAX_COLS], int rows, int cols) {
     for (int i = 0; i < rows; i++) {
@@ -22,31 +22,30 @@ int isRectangular(char maze[MAX_ROWS][MAX_COLS], int rows, int cols) {
 
 // Function to validate the maze
 int validateMaze(char maze[MAX_ROWS][MAX_COLS], int rows, int cols) {
-    int startFound = 0, endFound = 0;
+    int startP = 0, endP = 0;
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             if (maze[i][j] == 'S') {
-                if (startFound) return 0; // Multiple 'S' found
-                startFound = 1;
+                if (startP) return 0; 
+                startP = 1;
             }
             if (maze[i][j] == 'E') {
-                if (endFound) return 0; // Multiple 'E' found
-                endFound = 1;
+                if (endP) return 0; 
+                endP = 1;
             }
-            // Check for invalid characters
             if (maze[i][j] != ' ' && maze[i][j] != '#' && maze[i][j] != 'S' && maze[i][j] != 'E') {
                 return 0;
             }
         }
     }
-    return startFound && endFound; // Both 'S' and 'E' must be found
+    return startP && endP; 
 }
 
 // Function to print the maze
-void printMaze(char maze[MAX_ROWS][MAX_COLS], int rows, int cols, int showMap, int playerX, int playerY)
+void printMaze(char maze[MAX_ROWS][MAX_COLS], int rows, int cols, int showMap, int xGird, int yGird)
 
 // Function to move the player
-int movePlayer(char maze[MAX_ROWS][MAX_COLS], int *playerX, int *playerY, char direction) {
+int movePlayer(char maze[MAX_ROWS][MAX_COLS], int *xGird, int *yGird, char direction) {
     switch (direction) {
         case 'W': case 'w': break;
         case 'A': case 'a': break;
@@ -71,9 +70,7 @@ int main(int argc, char *argv[]) {
     int rows = 0, cols = 0;
     char line[MAX_COLS + 1];
 
-    // Read the maze from file and find 'S' start position
     while (fgets(line, sizeof(line), file)) {
-        // Remove newline character
         size_t len = strlen(line);
         if (line[len - 1] == '\n') {
             line[len - 1] = '\0';
