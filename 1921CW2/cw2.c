@@ -80,16 +80,10 @@ int movePlayer(char maze[MAX_ROWS][MAX_COLS], int *playerX, int *playerY, char d
     return 1;
 }
 
-/*
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         printf("Usage: %s <maze_file.txt>\n", argv[0]);
-        return 1;
-    }
-
-    FILE *file = fopen(argv[1], "r");
-    if (file == NULL) {
-        perror("Error opening file");
         return 1;
     }
 
@@ -97,18 +91,25 @@ int main(int argc, char *argv[]) {
     int rows = 0, cols = 0, playerX = -1, playerY = -1;
     char line[MAX_COLS + 1];
 
+
+    FILE *file = fopen(argv[1], "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        return 1;
+    }
     while (fgets(line, sizeof(line), file)) {
-        if (rows == 0) {
-            cols = strlen(line);
-            if (line[cols - 1] == '\n') {
-                line[--cols] = '\0'; // Handle newline character
-            }
+        size_t len = strlen(line);
+        if (len > 0 && line[len - 1] == '\n') {
+            line[--len] = '\0';
         }
-        if (strlen(line) != cols) { // Each row must be the same length
+        if (rows == 0) {
+            cols = len;
+        } else if (len != cols) {
             printf("Maze is not rectangular.\n");
             fclose(file);
             return 1;
         }
+
         strcpy(maze[rows], line);
         if (playerX == -1 && playerY == -1) { // Find the start position
             char *startPos = strchr(line, 'S');
@@ -129,8 +130,9 @@ int main(int argc, char *argv[]) {
     if (!isRectangular(maze, rows, cols) || !validateMaze(maze, rows, cols)) {
         return 1;
     }
-
-    printMaze(maze, rows, cols);
+    
+    int showMap = 0;
+    printMaze(maze, rows, cols, showMap, playerX, playerY);
 
     char input;
     int gameRunning = 1;
@@ -143,167 +145,16 @@ int main(int argc, char *argv[]) {
             continue;
         }
 
-        int moveResult = movePlayer(maze, &playerX, &playerY, input);
-
-        if (moveResult == 2) {
-            printf("Congratulations! You've found the exit!\n");
-            gameRunning = 0;
-        }
-
-        printMaze(maze, rows, cols);
-    }
-
-    printf("Game over.\n");
-    return 0;
-}
-
-// Functions are defined below...
-
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        printf("Usage: %s <maze_file.txt>\n", argv[0]);
-        return 1;
-    }
-
-    FILE *file = fopen(argv[1], "r");
-    if (file == NULL) {
-        perror("Error opening file");
-        return 1;
-    }
-
-    char maze[MAX_ROWS][MAX_COLS];
-    int rows = 0, cols = 0, playerX = -1, playerY = -1;
-    char line[MAX_COLS + 1];
-
-    // Read the maze from file and find 'S' start position
-    while (fgets(line, sizeof(line), file) && rows < MAX_ROWS) {
-        if (cols == 0) {
-            cols = strlen(line);
-            if (line[cols - 1] == '\n') {
-                line[cols - 1] = '\0';
-                cols--; // Correct the length if newline is present
-            }
-        }
-        if (strlen(line) != cols) { // Check if the maze is not rectangular
-            printf("Maze is not rectangular.\n");
-            fclose(file);
-            return 1;
-        }
-        strcpy(maze[rows], line);
-        if (playerX == -1) { // Look for the 'S' only if we haven't found it yet
-            char *startPos = strchr(line, 'S');
-            if (startPos != NULL) {
-                playerX = startPos - line;
-                playerY = rows;
-            }
-        }
-        rows++;
-    }
-    fclose(file);
-
-    if (rows < 5 || cols < 5 || !isRectangular(maze, rows, cols) || !validateMaze(maze, rows, cols)) {
-        printf("Maze is invalid.\n");
-        return 1;
-    }
-}
-*/
-
-
-// Main function to load and validate maze, then start the game
-int main(int argc, char *argv[]) {
-    // Your existing file reading and validation code here
-    if (argc != 2) {
-        printf("Usage: %s <maze_file.txt>\n", argv[0]);
-        return 1;
-    }
-
-    FILE *file = fopen(argv[1], "r");
-    if (file == NULL) {
-        perror("Error opening file");
-        return 1;
-    }
-
-    char maze[MAX_ROWS][MAX_COLS];
-    int rows = 0, cols = 0;
-    while (fgets(maze[rows], MAX_ROWS, file) && rows < MAX_ROWS) {
-        maze[rows][strcspn(maze[rows], "\n")] = 0; // Remove newline character
-        if (rows == 0) {
-            cols = strlen(maze[0]);
-        }
-        rows++;
-    }
-    fclose(file);
-
-    if (rows < 5 || cols < 5 || rows > MAX_ROWS || cols > MAX_COLS) {
-        printf("Maze dimensions are invalid.\n");
-        return 1;
-    }
-
-    if (!isRectangular(maze, rows, cols)) {
-        printf("Maze is not rectangular.\n");
-        return 1;
-    }
-
-    if (!validateMaze(maze, rows, cols)) {
-        printf("Maze validation failed.\n");
-        return 1;
-    }
-
-    printf("Maze is valid.\n");
-    return 0;
-
-    // Assume validation is successful, and we proceed to the game
-    int playerX = 1; // Starting X position
-    int playerY = 1; // Starting Y position
-    int showMap = 0; // Initially not showing the full map
-
-/*
-// Initialize the maze (if loading from a file, this would be done differently)
-    char maze[MAX_ROWS][MAX_COLS] = {
-        "###########",
-        "#S  #    E#",
-        "# #######  ",
-        "#         #",
-        "###########"
-    };
-    int rows = 5; // Number of rows in the maze
-    int cols = 10; // Number of columns in the maze
-    */
-    
-
-    // Print the initial maze
-    printMaze(maze, rows, cols, showMap, playerX, playerY);
-
-    // Game loop
-    char input;
-    int gameRunning = 1;
-    while (gameRunning) {
-        printf("Enter move (WASD) or 'M' to show map, 'Q' to quit: ");
-        scanf(" %c", &input); // Note the space before %c to eat any leftover newline characters
-
-        if (input == 'M' || input == 'm') {
-            showMap = !showMap;
-            printMaze(maze, rows, cols, showMap, playerX, playerY);
-            continue;
-        }
-
-        if (input == 'Q' || input == 'q') {
-            gameRunning = 0;
-            continue;
-        }
-
         int moveResult = movePlayer(maze, &playerX, &playerY, input, cols, rows);
 
         if (moveResult == 2) {
             printf("Congratulations! You've found the exit!\n");
             gameRunning = 0;
-            continue;
-        } else if (moveResult == 1) {
-            printMaze(maze, rows, cols, showMap, playerX, playerY);
         }
+
+        printMaze(maze, rows, cols, showMap, playerX, playerY);
     }
 
     printf("Game over.\n");
     return 0;
 }
-
