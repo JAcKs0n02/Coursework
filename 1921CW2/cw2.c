@@ -137,9 +137,15 @@ int main(int argc, char *argv[]) {
     char input;
     int gameRunning = 1;
     while (gameRunning) {
-        printf("Enter move (WASD) or 'Q' to quit: ");
-        scanf(" %c", &input); // Note the space before %c to eat any leftover newline characters
+        printf("Enter move (WASD), 'M' to show map, or'Q' to quit: ");
+        scanf(" %c", &input); 
 
+        if (input == 'M' || input == 'm'){
+            showMap = !showMap;
+            printMaze(maze, rows, cols, showMap, playerX, playerY);
+            continue;
+        }
+        
         if (input == 'Q' || input == 'q') {
             gameRunning = 0;
             continue;
